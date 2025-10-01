@@ -47,12 +47,12 @@ public class AccountController {
     @PostMapping
     public ResponseEntity<AccountDto> create(@RequestBody @Valid RequestCreateAccount requestCreateAccount) {
 
-        AccountDto accountDto = accountCreationService.create(AccountDto.builder()
-                                                                        .id(null)
-                                                                        .number(requestCreateAccount.getNumber())
+        AccountDto accountDto = accountCreationService.create(AccountDto.builder() // этот код пахнет. Убери этот builder в сервисный слой
+                                                                        .id(null) // если убрать эту строку, ничего не изменится. Поле id будет инициализировано как null(по-умолчанию)
+                                                                        .number(requestCreateAccount.getNumber()) //Возможно стоит принимать другую DTO в RequestBody, чтобы не было маппинга DTO -> DTO -> Entity. Сделай одно преобразование в сервисном слое(DTO -> Entity)
                                                                         .userId(requestCreateAccount.getUserId())
                                                                         .accountType(requestCreateAccount.getAccountType())
-                                                                        .balance(new BigDecimal(0))
+                                                                        .balance(new BigDecimal(0)) // стоит подумать над значением по-умолчанию на уровне БД. Если баланс не может быть null, тогда ставь constraint на колонке в таблице(not-null у тебя уже стоит). + добавь значение по-умолчанию для этого столбца(0)
                                                                         .build());
         return ResponseEntity.ok(accountDto);
     } 
